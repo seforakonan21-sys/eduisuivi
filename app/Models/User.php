@@ -1,6 +1,9 @@
 <?php
 
+
 namespace App\Models;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 use App\Enums\Role;
 use App\Models\Concerns\BelongsToEtablissement;
@@ -15,6 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'etablissement_id', 'name', 'email', 'password',
         'role', 'telephone', 'actif', 'consentement_at',
+        'doit_changer_mot_de_passe',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -27,11 +31,19 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => Role::class,
             'actif' => 'boolean',
+            'doit_changer_mot_de_passe' => 'boolean',
         ];
     }
 
     public function aLeRole(Role ...$roles): bool
     {
         return in_array($this->role, $roles, true);
+    }
+
+    public function enfants(): BelongsToMany
+    {
+        return $this->belongsToMany(Eleve::class, 'eleve_parent', 'parent_id', 'eleve_id')
+            ->withPivot('lien')
+            ->withTimestamps();
     }
 }

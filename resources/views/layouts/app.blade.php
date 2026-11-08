@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('titre', 'EduSuivi')</title>
+    
     <style>
         :root { --rouge:#C8102E; --noir:#111111; --blanc:#ffffff; --gris:#f4f4f5; }
         * { box-sizing: border-box; }
@@ -20,6 +21,11 @@
         .btn-noir { background:var(--noir); }
         .erreur { color:var(--rouge); font-size:.9rem; margin-top:6px; }
         .badge { background:var(--rouge); color:var(--blanc); padding:3px 10px; border-radius:20px; font-size:.8rem; }
+
+        .photo { width:90px; height:90px; border-radius:50%; object-fit:cover; background:#ddd; }
+        .alerte { background:#fff8e1; border-left:4px solid #f9a825; padding:12px; margin-bottom:14px; }
+        input[type=file] { width:100%; }
+        a.btn { display:inline-block; text-decoration:none; }
     </style>
 </head>
 <body>

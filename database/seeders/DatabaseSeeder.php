@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
             'password' => 'password',
             'role' => Role::AdminGeneral,
         ]);
+            $this->call(StructureScolaireSeeder::class);
+            $this->call(EleveSeeder::class);
+
 
         $etablissements = [
             ['nom' => 'Collège Moderne de Divo', 'code' => 'CMD', 'ville' => 'Divo', 'slug' => 'cmd'],
