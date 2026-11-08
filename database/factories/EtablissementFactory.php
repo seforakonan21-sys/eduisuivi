@@ -19,6 +19,10 @@ class EtablissementFactory extends Factory
     {
         return [
             //
+        'nom' => fake()->company(),
+        'code' => strtoupper(fake()->unique()->lexify('????')),
+        'ville' => fake()->city(),
+        'actif' => true,
         ];
     }
 }

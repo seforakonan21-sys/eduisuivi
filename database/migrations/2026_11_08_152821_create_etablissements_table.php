@@ -14,7 +14,15 @@ return new class extends Migration
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('nom');
+            $table->string('code')->unique();
+            $table->string('ville')->nullable();
+            $table->string('telephone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('logo')->nullable();
+            $table->boolean('actif')->default(true);
         });
+
     }
 
     /**
