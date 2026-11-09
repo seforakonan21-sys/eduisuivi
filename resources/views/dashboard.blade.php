@@ -1,23 +1,29 @@
 @extends('layouts.app')
-@section('titre', 'Tableau de bord - EduSuivi')
+@section('titre', 'Tableau de bord')
 
 @section('contenu')
-@if($user->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif))
-    <a class="btn" href="{{ route('structure.annees.index') }}">Structure scolaire</a>
-    <a class="btn" href="{{ route('eleves.index') }}">Élèves</a>
-    <a class="btn" href="{{ route('parents.index') }}">Parents</a>
-@endif
 <div class="carte">
-    <h2 style="margin-top:0">Bienvenue, {{ $user->name }}</h2>
-    <p><span class="badge">{{ $user->role->label() }}</span></p>
-    @if($user->etablissement)
-        <p>Établissement : <strong>{{ $user->etablissement->nom }}</strong></p>
-    @else
-        <p>Vue globale de la plateforme.</p>
-    @endif
+    <h2 style="margin-bottom:6px">Bienvenue, {{ $user->name }}</h2>
+    <span class="badge">{{ $user->role->label() }}</span>
 
-    @if($user->aLeRole(\App\Enums\Role::AdminGeneral))
-        <a class="btn btn-noir" href="{{ route('administration') }}">Administration</a>
+    @if($annee)
+        <p style="margin:14px 0 0">Année scolaire en cours : <strong>{{ $annee->libelle }}</strong></p>
+    @elseif($user->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif))
+        <div class="alerte" style="margin:14px 0 0">
+            Aucune année scolaire active.
+            <a href="{{ route('structure.annees.index') }}">Créer une année</a> pour commencer.
+        </div>
     @endif
 </div>
+
+@if($stats)
+    <div class="stats">
+        @foreach($stats as $libelle => $valeur)
+            <div class="stat">
+                <div class="valeur">{{ $valeur }}</div>
+                <div class="libelle">{{ $libelle }}</div>
+            </div>
+        @endforeach
+    </div>
+@endif
 @endsection

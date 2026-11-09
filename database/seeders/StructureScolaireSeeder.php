@@ -18,6 +18,7 @@ class StructureScolaireSeeder extends Seeder
     {
         foreach (Etablissement::all() as $etab) {
             $id = $etab->id;
+            $primaire = $etab->code === 'EPP';
 
             $annee = AnneeScolaire::create([
                 'etablissement_id' => $id, 'libelle' => '2026-2027',
@@ -36,26 +37,37 @@ class StructureScolaireSeeder extends Seeder
                 ]);
             }
 
-            $niveaux = collect(['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Terminale'])
-                ->map(fn ($nom, $i) => Niveau::create([
-                    'etablissement_id' => $id, 'nom' => $nom, 'ordre' => $i + 1,
-                ]));
+            // Niveaux : CP1 à CM2 pour l'école primaire, 6ème à Terminale pour le secondaire
+            $liste = $primaire
+                ? [['CP1', 'primaire'], ['CP2', 'primaire'], ['CE1', 'primaire'],
+                   ['CE2', 'primaire'], ['CM1', 'primaire'], ['CM2', 'primaire']]
+                : [['6ème', 'college'], ['5ème', 'college'], ['4ème', 'college'], ['3ème', 'college'],
+                   ['2nde', 'lycee'], ['1ère', 'lycee'], ['Terminale', 'lycee']];
 
-            foreach ($niveaux->take(4) as $niveau) {
+            $niveaux = collect($liste)->map(fn ($n, $i) => Niveau::create([
+                'etablissement_id' => $id, 'nom' => $n[0], 'cycle' => $n[1], 'ordre' => $i + 1,
+            ]));
+
+            // Classes : A et B pour chaque niveau du primaire, pour les 4 premiers du secondaire
+            foreach ($primaire ? $niveaux : $niveaux->take(4) as $niveau) {
                 foreach (['A', 'B'] as $lettre) {
                     Classe::create([
                         'etablissement_id' => $id, 'niveau_id' => $niveau->id,
                         'annee_scolaire_id' => $annee->id,
-                        'nom' => "{$niveau->nom} {$lettre}", 'effectif_max' => 50,
+                        'nom' => "{$niveau->nom} {$lettre}", 'effectif_max' => $primaire ? 60 : 50,
                     ]);
                 }
             }
 
-            $matieres = collect([
-                ['Mathématiques', 'MATH'], ['Français', 'FRA'], ['Anglais', 'ANG'],
-                ['Histoire-Géographie', 'HG'], ['SVT', 'SVT'], ['Physique-Chimie', 'PC'],
-                ['EPS', 'EPS'], ['Éducation civique', 'EDHC'],
-            ])->map(fn ($m) => Matiere::create([
+            // Matières (à ajuster avec les vrais programmes)
+            $listeMatieres = $primaire
+                ? [['Français', 'FRA'], ['Mathématiques', 'MATH'], ['Éveil scientifique', 'EVEIL'],
+                   ['Éducation civique', 'EDHC'], ['EPS', 'EPS']]
+                : [['Mathématiques', 'MATH'], ['Français', 'FRA'], ['Anglais', 'ANG'],
+                   ['Histoire-Géographie', 'HG'], ['SVT', 'SVT'], ['Physique-Chimie', 'PC'],
+                   ['EPS', 'EPS'], ['Éducation civique', 'EDHC']];
+
+            $matieres = collect($listeMatieres)->map(fn ($m) => Matiere::create([
                 'etablissement_id' => $id, 'nom' => $m[0], 'code' => $m[1],
             ]));
 
@@ -64,11 +76,12 @@ class StructureScolaireSeeder extends Seeder
             $classe = Classe::where('etablissement_id', $id)->orderBy('id')->first();
 
             if ($enseignant && $classe) {
-                foreach ($matieres->take(2) as $matiere) {
+                // Primaire : le maître de classe enseigne toutes les matières
+                foreach ($primaire ? $matieres : $matieres->take(2) as $matiere) {
                     Affectation::create([
                         'etablissement_id' => $id, 'classe_id' => $classe->id,
                         'matiere_id' => $matiere->id, 'enseignant_id' => $enseignant->id,
-                        'coefficient' => 4,
+                        'coefficient' => $primaire ? 1 : 4,
                     ]);
                 }
             }

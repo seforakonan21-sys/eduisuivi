@@ -21,7 +21,15 @@ class EleveSeeder extends Seeder
         $service = app(InscriptionService::class);
 
         foreach (Etablissement::all() as $etab) {
-            $classes = Classe::where('etablissement_id', $etab->id)->orderBy('id')->take(2)->get();
+            // Une classe sur deux, pour avoir des niveaux variés
+            $classes = Classe::with('niveau')
+                ->where('etablissement_id', $etab->id)
+                ->orderBy('id')
+                ->get()
+                ->filter(fn ($c, $k) => $k % 2 === 0)
+                ->values()
+                ->take(4);
+
             $parent = User::where('etablissement_id', $etab->id)->where('role', 'parent')->first();
 
             if ($classes->isEmpty()) {
@@ -31,16 +39,20 @@ class EleveSeeder extends Seeder
             for ($i = 0; $i < 12; $i++) {
                 $feminin = $i % 2 === 0;
 
+                // Calculés avant Eleve::create
+                $classe = $classes[$i % $classes->count()];
+                $anneeBase = $classe->niveau->cycle === 'primaire' ? 2015 : 2010;
+
                 $eleve = Eleve::create([
                     'etablissement_id' => $etab->id,
                     'matricule' => Eleve::genererMatricule($etab),
                     'nom' => $noms[$i % count($noms)],
                     'prenoms' => $feminin ? $prenomsF[$i % count($prenomsF)] : $prenomsM[$i % count($prenomsM)],
-                    'date_naissance' => sprintf('%d-%02d-%02d', 2010 + ($i % 5), 1 + ($i % 12), 5 + $i),
+                    'date_naissance' => sprintf('%d-%02d-%02d', $anneeBase + ($i % 5), 1 + ($i % 12), 5 + $i),
                     'sexe' => $feminin ? 'F' : 'M',
                 ]);
 
-                $service->inscrire($eleve, $classes[$i % $classes->count()]);
+                $service->inscrire($eleve, $classe);
 
                 // Le parent de démo suit deux enfants (frères et sœurs)
                 if ($parent && $i < 2) {

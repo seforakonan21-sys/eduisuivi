@@ -78,6 +78,17 @@ class StructureScolaireTest extends TestCase
             ->assertDontSee('NiveauBeta');
     }
 
+    public function test_un_niveau_du_primaire_peut_etre_ajoute(): void
+    {
+        $a = Etablissement::factory()->create();
+
+        $this->actingAs($this->utilisateur(Role::Directeur, $a))
+            ->post(route('structure.niveaux.store'), ['nom' => 'CP1', 'cycle' => 'primaire', 'ordre' => 1])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('niveaux', ['nom' => 'CP1', 'cycle' => 'primaire', 'etablissement_id' => $a->id]);
+    }
+
     public function test_impossible_de_supprimer_le_niveau_d_un_autre_etablissement(): void
     {
         $a = Etablissement::factory()->create();

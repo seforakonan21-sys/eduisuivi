@@ -10,9 +10,15 @@ class Niveau extends Model
 {
     use BelongsToEtablissement;
 
+    public const CYCLES = [
+        'primaire' => 'Primaire',
+        'college'  => 'Collège',
+        'lycee'    => 'Lycée',
+    ];
+
     protected $table = 'niveaux';
 
-    protected $fillable = ['etablissement_id', 'nom', 'ordre'];
+    protected $fillable = ['etablissement_id', 'nom', 'cycle', 'ordre'];
 
     public function classes(): HasMany
     {

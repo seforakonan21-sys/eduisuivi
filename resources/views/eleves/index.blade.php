@@ -36,6 +36,20 @@
         @endforelse
     </table>
 
-    <div style="margin-top:14px">{{ $eleves->links('pagination::simple-default') }}</div>
+    <div style="margin-top:14px; display:flex; gap:14px; align-items:center">
+        @if($eleves->onFirstPage())
+            <span style="color:#999">← Précédent</span>
+        @else
+            <a href="{{ $eleves->previousPageUrl() }}">← Précédent</a>
+        @endif
+
+        <span>Page {{ $eleves->currentPage() }} sur {{ $eleves->lastPage() }}</span>
+
+        @if($eleves->hasMorePages())
+            <a href="{{ $eleves->nextPageUrl() }}">Suivant →</a>
+        @else
+            <span style="color:#999">Suivant →</span>
+        @endif
+    </div>
 </div>
 @endsection

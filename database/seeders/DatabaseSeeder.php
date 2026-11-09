@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
         $etablissements = [
             ['nom' => 'Collège Moderne de Divo', 'code' => 'CMD', 'ville' => 'Divo', 'slug' => 'cmd'],
             ['nom' => 'Collège Sainte-Marie', 'code' => 'CSM', 'ville' => 'Abidjan', 'slug' => 'csm'],
+            ['nom' => 'École Primaire Publique de Divo', 'code' => 'EPP', 'ville' => 'Divo', 'slug' => 'epp'],
+    
         ];
 
         foreach ($etablissements as $e) {

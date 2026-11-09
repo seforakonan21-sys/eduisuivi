@@ -35,9 +35,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('etablissement_id')->constrained()->cascadeOnDelete();
             $table->string('nom');
+            $table->string('cycle', 20)->default('college');
             $table->unsignedTinyInteger('ordre')->default(1);
             $table->timestamps();
             $table->unique(['etablissement_id', 'nom']);
+            
         });
 
         Schema::create('classes', function (Blueprint $table) {
