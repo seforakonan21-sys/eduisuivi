@@ -18,7 +18,7 @@ class Niveau extends Model
 
     protected $table = 'niveaux';
 
-    protected $fillable = ['etablissement_id', 'nom', 'cycle', 'ordre'];
+    protected $fillable = ['etablissement_id', 'nom', 'cycle', 'bareme', 'ordre'];
 
     public function classes(): HasMany
     {

@@ -1,4 +1,7 @@
 <?php
+
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
 use App\Http\Controllers\EleveParentController;
 use App\Http\Controllers\InscriptionController;
@@ -9,9 +12,10 @@ use App\Http\Controllers\Structure\ClasseController;
 use App\Http\Controllers\Structure\MatiereController;
 use App\Http\Controllers\Structure\NiveauController;
 use App\Http\Controllers\Structure\PeriodeController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ResultatController;
 
 Route::redirect('/', '/connexion');
 
@@ -49,8 +53,10 @@ Route::middleware(['auth', 'role:directeur,administratif'])
         $crud('affectations', AffectationController::class, 'affectation');
     });
 
-    Route::middleware(['auth', 'role:directeur,administratif'])->group(function () {
-    Route::resource('eleves', EleveController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+Route::middleware(['auth', 'role:directeur,administratif'])->group(function () {
+    Route::resource('eleves', EleveController::class)
+        ->only(['index', 'create', 'store', 'show', 'destroy'])
+        ->parameters(['eleves' => 'eleve']);
 
     Route::post('eleves/{eleve}/inscriptions', [InscriptionController::class, 'store'])
         ->name('eleves.inscriptions.store');
@@ -62,5 +68,25 @@ Route::middleware(['auth', 'role:directeur,administratif'])
     Route::delete('eleves/{eleve}/parents/{parent}', [EleveParentController::class, 'destroy'])
         ->name('eleves.parents.destroy');
 
-    Route::resource('parents', ParentController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('parents', ParentController::class)
+        ->only(['index', 'store', 'destroy'])
+        ->parameters(['parents' => 'parent']);
 });
+Route::middleware(['auth', 'role:directeur,enseignant'])->group(function () {
+    Route::get('evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
+    Route::get('evaluations/create', [EvaluationController::class, 'create'])->name('evaluations.create');
+    Route::post('evaluations', [EvaluationController::class, 'store'])->name('evaluations.store');
+    Route::delete('evaluations/{evaluation}', [EvaluationController::class, 'destroy'])->name('evaluations.destroy');
+
+    Route::get('evaluations/{evaluation}/notes', [NoteController::class, 'edit'])->name('evaluations.notes.edit');
+    Route::put('evaluations/{evaluation}/notes', [NoteController::class, 'update'])->name('evaluations.notes.update');
+});
+
+// La validation est réservée au directeur
+Route::middleware(['auth', 'role:directeur'])->group(function () {
+    Route::patch('evaluations/{evaluation}/valider', [EvaluationController::class, 'valider'])->name('evaluations.valider');
+    Route::patch('evaluations/{evaluation}/devalider', [EvaluationController::class, 'devalider'])->name('evaluations.devalider');
+});
+
+Route::middleware(['auth', 'role:directeur,administratif,enseignant'])
+    ->get('resultats', [ResultatController::class, 'index'])->name('resultats.index');

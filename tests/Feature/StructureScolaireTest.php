@@ -83,10 +83,13 @@ class StructureScolaireTest extends TestCase
         $a = Etablissement::factory()->create();
 
         $this->actingAs($this->utilisateur(Role::Directeur, $a))
-            ->post(route('structure.niveaux.store'), ['nom' => 'CP1', 'cycle' => 'primaire', 'ordre' => 1])
-            ->assertSessionHasNoErrors();
+            ->post(route('structure.niveaux.store'), [
+                'nom' => 'CP1', 'cycle' => 'primaire', 'bareme' => 10, 'ordre' => 1,
+            ])->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('niveaux', ['nom' => 'CP1', 'cycle' => 'primaire', 'etablissement_id' => $a->id]);
+        $this->assertDatabaseHas('niveaux', [
+            'nom' => 'CP1', 'cycle' => 'primaire', 'bareme' => 10, 'etablissement_id' => $a->id,
+        ]);
     }
 
     public function test_impossible_de_supprimer_le_niveau_d_un_autre_etablissement(): void

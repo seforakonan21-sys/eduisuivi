@@ -8,6 +8,7 @@ use App\Models\Classe;
 use App\Models\Eleve;
 use App\Models\User;
 use App\Services\InscriptionService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -103,10 +104,17 @@ class EleveController extends Controller
 
     public function destroy(Eleve $eleve)
     {
+        try {
+            $eleve->delete();
+        } catch (QueryException) {
+            return back()->withErrors([
+                'suppression' => 'Impossible : cet élève a déjà des notes enregistrées.',
+            ]);
+        }
+
         if ($eleve->photo) {
             Storage::disk('public')->delete($eleve->photo);
         }
-        $eleve->delete();
 
         return redirect()->route('eleves.index')->with('succes', 'Dossier élève supprimé.');
     }

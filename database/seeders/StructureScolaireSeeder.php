@@ -45,7 +45,8 @@ class StructureScolaireSeeder extends Seeder
                    ['2nde', 'lycee'], ['1ère', 'lycee'], ['Terminale', 'lycee']];
 
             $niveaux = collect($liste)->map(fn ($n, $i) => Niveau::create([
-                'etablissement_id' => $id, 'nom' => $n[0], 'cycle' => $n[1], 'ordre' => $i + 1,
+                'etablissement_id' => $id, 'nom' => $n[0], 'cycle' => $n[1],
+                'bareme' => $n[1] === 'primaire' ? 10 : 20, 'ordre' => $i + 1,
             ]));
 
             // Classes : A et B pour chaque niveau du primaire, pour les 4 premiers du secondaire

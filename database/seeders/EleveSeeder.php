@@ -21,14 +21,9 @@ class EleveSeeder extends Seeder
         $service = app(InscriptionService::class);
 
         foreach (Etablissement::all() as $etab) {
-            // Une classe sur deux, pour avoir des niveaux variés
-            $classes = Classe::with('niveau')
-                ->where('etablissement_id', $etab->id)
-                ->orderBy('id')
-                ->get()
-                ->filter(fn ($c, $k) => $k % 2 === 0)
-                ->values()
-                ->take(4);
+            // Les classes « A » des deux premiers niveaux
+            $classes = Classe::with('niveau')->where('etablissement_id', $etab->id)->orderBy('id')->get()
+                ->filter(fn ($c, $k) => $k % 2 === 0)->values()->take(2);
 
             $parent = User::where('etablissement_id', $etab->id)->where('role', 'parent')->first();
 
@@ -36,10 +31,8 @@ class EleveSeeder extends Seeder
                 continue;
             }
 
-            for ($i = 0; $i < 12; $i++) {
+            for ($i = 0; $i < 24; $i++) {
                 $feminin = $i % 2 === 0;
-
-                // Calculés avant Eleve::create
                 $classe = $classes[$i % $classes->count()];
                 $anneeBase = $classe->niveau->cycle === 'primaire' ? 2015 : 2010;
 

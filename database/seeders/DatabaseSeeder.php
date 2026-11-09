@@ -17,15 +17,11 @@ class DatabaseSeeder extends Seeder
             'password' => 'password',
             'role' => Role::AdminGeneral,
         ]);
-            $this->call(StructureScolaireSeeder::class);
-            $this->call(EleveSeeder::class);
-
 
         $etablissements = [
+            ['nom' => 'École Primaire Publique de Divo', 'code' => 'EPP', 'ville' => 'Divo', 'slug' => 'epp'],
             ['nom' => 'Collège Moderne de Divo', 'code' => 'CMD', 'ville' => 'Divo', 'slug' => 'cmd'],
             ['nom' => 'Collège Sainte-Marie', 'code' => 'CSM', 'ville' => 'Abidjan', 'slug' => 'csm'],
-            ['nom' => 'École Primaire Publique de Divo', 'code' => 'EPP', 'ville' => 'Divo', 'slug' => 'epp'],
-    
         ];
 
         foreach ($etablissements as $e) {
@@ -48,5 +44,12 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+        // Ces seeders doivent passer APRÈS la création des établissements, dans cet ordre
+        $this->call([
+            StructureScolaireSeeder::class,
+            EleveSeeder::class,
+            EvaluationSeeder::class,
+        ]);
     }
 }

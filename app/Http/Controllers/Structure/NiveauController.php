@@ -25,7 +25,9 @@ class NiveauController extends Controller
             'nom' => ['required', 'string', 'max:50',
                 Rule::unique('niveaux')->where('etablissement_id', $request->user()->etablissement_id)],
             'cycle' => ['required', Rule::in(array_keys(Niveau::CYCLES))],
+            'bareme' => ['required', Rule::in([10, 20])],
             'ordre' => ['required', 'integer', 'between:1,30'],
+            
 
         ]);
 

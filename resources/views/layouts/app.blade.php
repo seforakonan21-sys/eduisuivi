@@ -127,6 +127,14 @@
                 <a href="{{ route('structure.matieres.index') }}" class="{{ $actif('structure.matieres.*') }}">Matières</a>
                 <a href="{{ route('structure.affectations.index') }}" class="{{ $actif('structure.affectations.*') }}">Affectations</a>
             @endif
+
+            @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif, \App\Enums\Role::Enseignant))
+                <div class="groupe">Notes et résultats</div>
+                @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Enseignant))
+                    <a href="{{ route('evaluations.index') }}" class="{{ $actif('evaluations.*') }}">Évaluations</a>
+                @endif
+                <a href="{{ route('resultats.index') }}" class="{{ $actif('resultats.*') }}">Résultats</a>
+            @endif
         </nav>
 
         <div class="utilisateur">
