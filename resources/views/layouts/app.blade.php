@@ -93,6 +93,10 @@
             .avec-menu .principal { margin-left:0; }
             main { padding:16px; }
         }
+
+        textarea { width:100%; min-height:90px; padding:10px 12px; border:1px solid #CBD0D6; border-radius:8px;
+                   background:var(--blanc); font:inherit; color:var(--texte); }
+        textarea:focus { outline:2px solid var(--rouge); outline-offset:1px; border-color:var(--rouge); }
     </style>
 </head>
 <body>
@@ -132,8 +136,17 @@
                 <div class="groupe">Notes et résultats</div>
                 @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Enseignant))
                     <a href="{{ route('evaluations.index') }}" class="{{ $actif('evaluations.*') }}">Évaluations</a>
+                    <a href="{{ route('appreciations.edit') }}" class="{{ $actif('appreciations.*') }}">Appréciations</a>
                 @endif
                 <a href="{{ route('resultats.index') }}" class="{{ $actif('resultats.*') }}">Résultats</a>
+            @endif
+
+            @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif))
+                <div class="groupe">Bulletins</div>
+                <a href="{{ route('bulletins.index') }}" class="{{ $actif('bulletins.*') }}">Bulletins</a>
+                @if($u->aLeRole(\App\Enums\Role::Directeur))
+                    <a href="{{ route('etablissement.edit') }}" class="{{ $actif('etablissement.*') }}">Mon établissement</a>
+                @endif
             @endif
 
             @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif, \App\Enums\Role::Enseignant))
@@ -145,6 +158,7 @@
             @if($u->aLeRole(\App\Enums\Role::ParentEleve))
                 <div class="groupe">Mes enfants</div>
                 <a href="{{ route('espace.absences') }}" class="{{ $actif('espace.*') }}">Absences et retards</a>
+                <a href="{{ route('espace.bulletins') }}" class="{{ $actif('espace.bulletins') }}">Bulletins</a>
             @endif
 
             <div class="groupe">Messages</div>

@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ResultatController;
+use App\Http\Controllers\AppreciationController;
+use App\Http\Controllers\BulletinController;
+use App\Http\Controllers\EtablissementController;
 
 Route::redirect('/', '/connexion');
 
@@ -112,3 +115,34 @@ Route::middleware('auth')->group(function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/lues', [NotificationController::class, 'toutLire'])->name('notifications.lues');
 });
+
+Route::middleware(['auth', 'role:directeur,enseignant'])->group(function () {
+    Route::get('appreciations', [AppreciationController::class, 'edit'])->name('appreciations.edit');
+    Route::put('appreciations', [AppreciationController::class, 'update'])->name('appreciations.update');
+});
+
+Route::middleware(['auth', 'role:directeur,administratif'])->group(function () {
+    Route::get('bulletins', [BulletinController::class, 'index'])->name('bulletins.index');
+    Route::get('bulletins/classes/{classe}/periodes/{periode}/pdf', [BulletinController::class, 'pdfClasse'])
+        ->name('bulletins.pdf.classe');
+});
+
+Route::middleware(['auth', 'role:directeur'])->group(function () {
+    Route::get('bulletins/eleves/{eleve}/periodes/{periode}/edit', [BulletinController::class, 'edit'])->name('bulletins.edit');
+    Route::put('bulletins/eleves/{eleve}/periodes/{periode}', [BulletinController::class, 'update'])->name('bulletins.update');
+    Route::post('bulletins/classes/{classe}/periodes/{periode}/publication', [BulletinController::class, 'publier'])
+        ->name('bulletins.publier');
+    Route::delete('bulletins/classes/{classe}/periodes/{periode}/publication', [BulletinController::class, 'depublier'])
+        ->name('bulletins.depublier');
+
+    Route::get('mon-etablissement', [EtablissementController::class, 'edit'])->name('etablissement.edit');
+    Route::put('mon-etablissement', [EtablissementController::class, 'update'])->name('etablissement.update');
+});
+
+// Le PDF d'un élève : direction, secrétariat, et parents (seulement si le bulletin est publié)
+Route::middleware(['auth', 'role:directeur,administratif,parent'])
+    ->get('bulletins/eleves/{eleve}/periodes/{periode}/pdf', [BulletinController::class, 'pdf'])
+    ->name('bulletins.pdf');
+
+Route::middleware(['auth', 'role:parent'])
+    ->get('mon-espace/bulletins', [EspaceParentController::class, 'bulletins'])->name('espace.bulletins');

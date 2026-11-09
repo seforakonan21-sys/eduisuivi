@@ -18,6 +18,9 @@ class EleveSeeder extends Seeder
         $prenomsF = ['Awa', 'Adjoua', 'Aya', 'Fatou', 'Mariam', 'Affoué', 'Ahou', 'Nadège'];
         $prenomsM = ['Ange', 'Yves', 'Kevin', 'Serge', 'Ibrahim', 'Kouadio', 'Cédric', 'Jean-Marc'];
 
+        // Indices des deux enfants du parent de démo (même classe, même nom de famille)
+        $enfantsDuParent = [0, 2];
+
         $service = app(InscriptionService::class);
 
         foreach (Etablissement::all() as $etab) {
@@ -39,7 +42,7 @@ class EleveSeeder extends Seeder
                 $eleve = Eleve::create([
                     'etablissement_id' => $etab->id,
                     'matricule' => Eleve::genererMatricule($etab),
-                    'nom' => $noms[$i % count($noms)],
+                    'nom' => in_array($i, $enfantsDuParent, true) ? 'Kouassi' : $noms[$i % count($noms)],
                     'prenoms' => $feminin ? $prenomsF[$i % count($prenomsF)] : $prenomsM[$i % count($prenomsM)],
                     'date_naissance' => sprintf('%d-%02d-%02d', $anneeBase + ($i % 5), 1 + ($i % 12), 5 + $i),
                     'sexe' => $feminin ? 'F' : 'M',
@@ -47,8 +50,8 @@ class EleveSeeder extends Seeder
 
                 $service->inscrire($eleve, $classe);
 
-                // Le parent de démo suit deux enfants (frères et sœurs)
-                if ($parent && $i < 2) {
+                // Le parent de démo suit deux enfants de la même classe (celle qui a des notes)
+                if ($parent && in_array($i, $enfantsDuParent, true)) {
                     $eleve->parents()->attach($parent->id, ['lien' => 'mere']);
                 }
             }

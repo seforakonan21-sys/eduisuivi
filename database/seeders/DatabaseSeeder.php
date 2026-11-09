@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             EleveSeeder::class,
             EvaluationSeeder::class,
             AbsenceSeeder::class,
+            BulletinSeeder::class,
         ]);
     }
 }

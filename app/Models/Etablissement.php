@@ -10,7 +10,8 @@ class Etablissement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'code', 'ville', 'telephone', 'email', 'logo', 'actif'];
+    protected $fillable = [ 'nom', 'code', 'ville', 'adresse', 'telephone', 'email',
+    'logo', 'cachet', 'signataire_nom', 'actif',];
 
     protected function casts(): array
     {
