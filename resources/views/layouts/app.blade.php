@@ -135,6 +135,23 @@
                 @endif
                 <a href="{{ route('resultats.index') }}" class="{{ $actif('resultats.*') }}">Résultats</a>
             @endif
+
+            @if($u->aLeRole(\App\Enums\Role::Directeur, \App\Enums\Role::Administratif, \App\Enums\Role::Enseignant))
+                <div class="groupe">Vie scolaire</div>
+                <a href="{{ route('appel.index') }}" class="{{ $actif('appel.*') }}">Appel du jour</a>
+                <a href="{{ route('absences.index') }}" class="{{ $actif('absences.*') }}">Absences et retards</a>
+            @endif
+
+            @if($u->aLeRole(\App\Enums\Role::ParentEleve))
+                <div class="groupe">Mes enfants</div>
+                <a href="{{ route('espace.absences') }}" class="{{ $actif('espace.*') }}">Absences et retards</a>
+            @endif
+
+            <div class="groupe">Messages</div>
+            @php $nonLues = $u->unreadNotifications()->count(); @endphp
+            <a href="{{ route('notifications.index') }}" class="{{ $actif('notifications.*') }}">
+                Notifications @if($nonLues)<span class="badge" style="margin-left:6px">{{ $nonLues }}</span>@endif
+            </a>
         </nav>
 
         <div class="utilisateur">

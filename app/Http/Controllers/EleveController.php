@@ -108,7 +108,8 @@ class EleveController extends Controller
             $eleve->delete();
         } catch (QueryException) {
             return back()->withErrors([
-                'suppression' => 'Impossible : cet élève a déjà des notes enregistrées.',
+                
+                'Impossible : cet élève a déjà des notes ou des absences enregistrées.',
             ]);
         }
 

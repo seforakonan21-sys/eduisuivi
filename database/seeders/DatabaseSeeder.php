@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
             StructureScolaireSeeder::class,
             EleveSeeder::class,
             EvaluationSeeder::class,
+            AbsenceSeeder::class,
         ]);
     }
 }

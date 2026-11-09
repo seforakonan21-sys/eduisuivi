@@ -1,4 +1,8 @@
 <?php
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\AppelController;
+use App\Http\Controllers\EspaceParentController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
@@ -90,3 +94,21 @@ Route::middleware(['auth', 'role:directeur'])->group(function () {
 
 Route::middleware(['auth', 'role:directeur,administratif,enseignant'])
     ->get('resultats', [ResultatController::class, 'index'])->name('resultats.index');
+    Route::middleware(['auth', 'role:directeur,administratif,enseignant'])->group(function () {
+    Route::get('appel', [AppelController::class, 'index'])->name('appel.index');
+    Route::post('appel', [AppelController::class, 'store'])->name('appel.store');
+    Route::get('absences', [AbsenceController::class, 'index'])->name('absences.index');
+});
+
+Route::middleware(['auth', 'role:directeur,administratif'])->group(function () {
+    Route::patch('absences/{absence}/justification', [AbsenceController::class, 'justifier'])->name('absences.justifier');
+    Route::delete('absences/{absence}/justification', [AbsenceController::class, 'retirerJustification'])->name('absences.retirer');
+});
+
+Route::middleware(['auth', 'role:parent'])
+    ->get('mon-espace/absences', [EspaceParentController::class, 'absences'])->name('espace.absences');
+
+Route::middleware('auth')->group(function () {
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/lues', [NotificationController::class, 'toutLire'])->name('notifications.lues');
+});
